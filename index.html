@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Start Game</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 30px;
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      text-align: center;
+      width: 300px;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 90%;
+      padding: 10px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 10px;
+      outline: none;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 10px;
+      background: #00c6ff;
+      background: linear-gradient(90deg, #00c6ff, #0072ff);
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="card">
+  <h2>🎮 เริ่มเกม</h2>
+  <input id="name" placeholder="ชื่อ">
+  <input id="age" placeholder="อายุ">
+  <button onclick="startGame()">Start Game</button>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDnwbSaQxDMx9H6ejQk8T-30lKg9xDvHxc",
+  projectId: "database-25e52"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+window.startGame = async function() {
+  const name = document.getElementById("name").value;
+  const age = document.getElementById("age").value;
+
+  if (!name || !age) {
+    alert("กรุณากรอกข้อมูลให้ครบ");
+    return;
+  }
+
+  const userId = "user_" + Date.now();
+  localStorage.setItem("userId", userId);
+
+  await setDoc(doc(db, "players", userId), {
+    name,
+    age
+  });
+
+  alert("กรอกนะไอสัส!");
+  window.location.href = "YOUR_GENIALLY_LINK";
+}
+</script>
+
+</body>
+</html>

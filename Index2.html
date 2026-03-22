@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Survey</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #141e30, #243b55);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.1);
+      padding: 30px;
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+      text-align: center;
+      width: 320px;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+    }
+
+    h3 {
+      margin-top: 20px;
+      margin-bottom: 15px;
+    }
+
+    select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      margin-bottom: 15px;
+    }
+
+    button {
+      padding: 12px;
+      width: 100%;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(90deg, #ff7e5f, #feb47b);
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+
+    .loading {
+      opacity: 0.7;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="card">
+  <h2 id="welcome" class="loading">กำลังโหลด...</h2>
+
+  <h3>🎯 แบบประเมินเกม</h3>
+
+  <select id="score">
+    <option value="">-- เลือกความรู้สึก --</option>
+    <option>สนุกมั่ง</option>
+    <option>กากสัด</option>
+    <option>แบบลิเวอ</option>
+  </select>
+
+  <button onclick="submitSurvey()">ส่งคำตอบ</button>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDnwbSaQxDMx9H6ejQk8T-30lKg9xDvHxc",
+  projectId: "database-25e52"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// 🔥 ดึง userId
+const userId = localStorage.getItem("userId");
+
+// 🔥 โหลด user
+async function loadUser() {
+  if (!userId) {
+    document.getElementById("welcome").innerText = "ไม่พบ userId";
+    return;
+  }
+
+  const docRef = doc(db, "players", userId);
+  const docSnap = await getDoc(docRef);
+
+  if (docSnap.exists()) {
+    const data = docSnap.data();
+
+    document.getElementById("welcome").innerText =
+      "👋 สวัสดีไอ้สัด " + data.name + " ผู้ซึงมีอายุ " + data.age +" ไอควายย ";
+  } else {
+    document.getElementById("welcome").innerText =
+      "ไม่พบข้อมูลผู้ใช้";
+  }
+}
+
+loadUser();
+
+// 🔴 submit
+window.submitSurvey = async function() {
+  const score = document.getElementById("score").value;
+
+  if (!score) {
+    alert("กรุณาเลือกคำตอบ");
+    return;
+  }
+
+  await updateDoc(doc(db, "players", userId), {
+    score: score
+  });
+
+  alert("🎉 ขอบคุณที่เล่นเกมนะไอสัดด!");
+};
+</script>
+
+</body>
+</html>
